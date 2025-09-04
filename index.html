@@ -41,6 +41,52 @@
   </head>
 
   <body>
+    <script>
+      function proc_exit() {console.log("proc_exit called from wasm")}
+      function fd_write() {console.log("fd_write called from wasm")}
+      function fd_close() {console.log("fd_close called from wasm")}
+      function fd_seek() {console.log("fd_seek called from wasm")}
+
+      imports = {
+        "wasi_snapshot_preview1":{
+          "proc_exit": proc_exit,
+          "fd_write": fd_write,
+          "fd_close": fd_close,
+          "fd_seek": fd_seek
+        }
+      }
+
+
+      WebAssembly.instantiateStreaming(fetch("ctx.wasm/ctx.wasm"), imports)
+        .then(obj => {
+          wasm_exports = {
+            malloc: obj.instance.exports.malloc,
+            free: obj.instance.free,
+            memory: obj.instance.memory,
+            stbi_load_from_memory: obj.instance.stbi_load_from_memory,
+            ctx_new_for_framebuffer: obj.instance.ctx_new_for_framebuffer,
+            ctx_apply_transform: obj.instance.ctx_apply_transform,
+            ctx_destroy: obj.instance.ctx_destroy,
+            ctx_parse: obj.instance.ctx_parse,
+            ctx_new_drawlist: obj.instance.ctx_new_drawlist,
+            ctx_text_width: obj.instance.ctx_text_width,
+            ctx_render_ctx: obj.instance.ctx_render_ctx,
+            ctx_define_texture: obj.instance.ctx_define_texture,
+            ctx_draw_texture: obj.instance.ctx_draw_texture,
+            ctx_x: obj.instance.ctx_x,
+            ctx_y: obj.instance.ctx_y,
+            ctx_logo: obj.instance.ctx_logo,
+            _initialize: obj.instance._initialize,
+            __indirect_function_table: obj.instance.__indirect_function_table,
+            __errno_location: obj.instance.__errno_location,
+            stackSave: obj.instance.stackSave,
+            stackRestore: obj.instance.stackRestore,
+            stackAlloc: obj.instance.stackAlloc
+          };
+        }
+      );
+    </script>
+
     <dialog id="loading">
       <h1>Loading...</h1>
     </dialog>
